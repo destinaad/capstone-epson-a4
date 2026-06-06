@@ -40,27 +40,6 @@ Skema ini dibuat oleh SQLAlchemy saat backend dijalankan. Alembic juga tersedia 
 
 ## Menjalankan backend
 
-### Database migrations (Alembic)
-
-Proyek sekarang menyertakan konfigurasi Alembic untuk menjalankan migrasi skema.
-Instal dependency lalu jalankan migrasi:
-
-```powershell
-# aktifkan venv lalu:
-pip install -r requirements.txt
-# jalankan migrasi
-.\.venv\Scripts\python.exe -m alembic upgrade head
-```
-
-Jika tidak mau menggunakan Alembic, Anda bisa menambah kolom `image_path` manual di PostgreSQL:
-
-```sql
-ALTER TABLE detection_results ADD COLUMN image_path varchar;
-```
-
-
-## Menjalankan backend
-
 Jika Anda menggunakan file model `.pt`, letakkan file tersebut di root proyek dengan nama `best.pt`.
 
 Jika Anda menggunakan file ZIP yang berisi model `.pt`, letakkan file tersebut di root proyek dengan nama `best.pt.zip`.
@@ -107,30 +86,22 @@ npm start
 
 Frontend akan tersedia di `http://localhost:3000`.
 
-## Catatan
-- Jika backend dan frontend dijalankan dengan pengaturan ini, frontend akan memanggil API lokal.
-- `docker-compose.yml` sudah berisi service untuk `postgres`, `pgadmin`, `backend`, dan `frontend`.
-- Backend dalam Docker menggunakan `DATABASE_URL=postgresql://postgres:pastibisa@postgres:5432/epson_qc` dan menghubungi container Postgres melalui nama service `postgres`.
-- Backend lokal menggunakan `localhost:5433` karena port host dipetakan dari container PostgreSQL.
-- Untuk menjalankan hanya database + pgAdmin saja, gunakan:
-  ```powershell
-docker compose up -d postgres pgadmin
-  ```
-- Untuk menjalankan seluruh stack lewat Docker, gunakan:
-  ```powershell
-docker compose up --build
-  ```
-- Jika ingin menjalankan frontend/backend lokal seperti kamu, gunakan `start-all.ps1`.
-- Jika ingin mengganti database atau port, gunakan environment variable yang sudah ada.
+## Catatan Penting Pengoperasian
 
-## Menambah user (CLI)
+* **Koneksi Terpusat:** Baik backend yang dijalankan di laptop Anda maupun di laptop anggota tim lain akan otomatis membaca dan menyimpan data ke kluster **Supabase Cloud** yang sama, asalkan file `.env` dikonfigurasi dengan benar.
+* **Tanpa Docker Desktop:** Anda tidak perlu lagi mengaktifkan service PostgreSQL lewat Docker, sehingga menghemat konsumsi RAM dan baterai laptop selama masa pengembangan.
+* **Sinkronisasi Frontend & Backend:** Pastikan backend dijalankan terlebih dahulu pada port `8000` sebelum mengaktifkan frontend React agar integrasi API berjalan mulus.
 
-Untuk menambahkan akun pengguna lokal tanpa membuka endpoint publik, gunakan skrip CLI berikut:
+---
+
+## Manajemen Akun Operator (CLI)
+
+Untuk menambahkan akun pengguna (operator/admin) baru ke database cloud tanpa melalui endpoint publik, gunakan skrip CLI aman di terminal root proyek Anda. 
+
+Karena password di sistem ini menggunakan enkripsi hash, **sangat tidak disarankan** menginput password polos langsung via Table Editor di web Supabase.
+
+### Cara Menambahkan User:
+Pastikan virtual environment `.venv` Anda sudah aktif, lalu jalankan perintah berikut di terminal:
 
 ```powershell
-cd "c:\Users\LENOVO\Downloads\capstone-epson-main\capstone-epson-main"
-# contoh: tambah operator
-.\.venv\Scripts\python.exe scripts\add_user.py operator1 operatorpass --role operator
-```
-
-Skrip akan membaca konfigurasi database dari environment variables yang sama seperti `database.py`.
+.\.venv\Scripts\python.exe scripts\add_user.py operator1 password123 --role operator

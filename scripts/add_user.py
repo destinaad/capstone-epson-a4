@@ -4,6 +4,9 @@ import argparse
 import bcrypt
 import psycopg2
 
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def get_db_conn():
     database_url = os.getenv("DATABASE_URL")

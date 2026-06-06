@@ -1,0 +1,53 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pastibisa
+      POSTGRES_DB: epson_qc
+    ports:
+      - '5433:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql://postgres:pastibisa@postgres:5432/epson_qc
+      APP_SECRET_KEY: change-me-in-prod
+      DETECTION_MODEL_PATH: best.pt
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./:/app
+      - ./static:/app/static
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: http://localhost:8000
+    ports:
+      - '3000:80'
+    depends_on:
+      - backend
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@mail.com
+      PGADMIN_DEFAULT_PASSWORD: adminpassword
+    ports:
+      - '5050:80'
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:

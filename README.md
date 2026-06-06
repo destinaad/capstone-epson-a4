@@ -17,29 +17,15 @@
    pip install -r requirements.txt
    ```
 
-### Database lokal dengan Docker
-1. Jalankan PostgreSQL dan pgAdmin dari `docker-compose`:
-   ```powershell
-   docker compose up -d postgres pgadmin
-   ```
-2. `docker-compose.yml` sudah memetakan Postgres ke port `5433`.
-3. `pgAdmin` akan tersedia di `http://localhost:5050`.
-4. Pastikan database dapat diakses menggunakan:
-   - host: `localhost`
-   - port: `5433`
-   - database: `epson_qc`
-   - user: `postgres`
-   - password: `pastibisa`
+### Konfigurasi Database (Supabase Cloud)
 
-## Konfigurasi `database.py`
+Proyek ini menggunakan **Supabase Cloud** sebagai database utama. Tim tidak perlu lagi menjalankan kontainer PostgreSQL lokal menggunakan Docker Desktop maupun pgAdmin.
 
-Backend saat ini sudah dikonfigurasi untuk membaca environment variable:
-- `POSTGRES_HOST` (default: `localhost`)
-- `POSTGRES_PORT` (default: `5433`)
-- `POSTGRES_USER` (default: `postgres`)
-- `POSTGRES_PASSWORD` (default: `pastibisa`)
-- `POSTGRES_DB` (default: `epson_qc`)
-- `DATABASE_URL` (opsional, bila ingin menggunakan URL penuh)
+### Pengaturan File `.env`
+Sistem backend saat ini dikonfigurasi untuk membaca variabel lingkungan tunggal bernama `DATABASE_URL`. Buat atau ubah file `.env` di root direktori proyek, lalu isi dengan format berikut:
+
+```text
+DATABASE_URL=postgresql://postgres.vtnixgypflpgjxpkfcdw:[PASSWORD_SUPABASE_ANDA]@[aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres](https://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres)
 
 ## Struktur database
 
